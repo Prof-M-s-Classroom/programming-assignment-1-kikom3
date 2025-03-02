@@ -32,30 +32,229 @@ class SpaceRoute {
 private:
     Node<T>* head;
     Node<T>* tail;
+    int length;
 
 public:
-    SpaceRoute();  // Constructor
-    ~SpaceRoute(); // Destructor
-
-    void addWaypointAtBeginning(T& data);
-    void addWaypointAtEnd(T& data);
-    void addWaypointAtIndex(int index, T& data);
-    void removeWaypointAtBeginning();
-    void removeWaypointAtEnd();
-    void removeWaypointAtIndex(int index);
-    void traverseForward();
-    void traverseBackward();
-    Node<T>* getWaypoint(int index);
-    void setWaypoint(int index, T& data);
-    void print(){
-
-            Node<T>* current = head;
-            while (current) {
-                current->print();
-                current = current->next;
-            }
-            cout << endl;
+    SpaceRoute() {
+        this->length = 0;
+        this->head = nullptr;
+        this->tail = nullptr;
+    }
+    ~SpaceRoute() {
+        Node<T> *current = head;
+        while (current != nullptr) {
+            Node<T> *nextNode = current->next;
+            delete current;
+            current = nextNode;
         }
+
+    }
+    void addWaypointAtBeginning(T& data) {
+        Node<T> *newNode = new Node<T>(data);
+        if (length == 0) { // empty list
+            head = newNode;
+            tail = newNode;
+        }
+        else { // snippet from linked list but also influencing the new previous node with doubly linked list
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+
+        }
+            length++;
+
+
+
+
+
+    }
+    void addWaypointAtEnd(T& data) {
+        Node<T> *newNode = new Node<T>(data);
+        /*
+       if (head == nullptr) { // empty list
+           head = newNode;
+           tail = newNode;
+       }
+        else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode;
+
+        }
+
+        length++;
+        */
+
+        Node<T> *temp = head;
+        if (length == 0) { // empty list
+            head = newNode;
+            tail = newNode;
+        }
+        else { // using code from regular linked list implementation but tweaking a bit to be able to also update new tail pointer with doubly
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+            tail = newNode;
+        }
+        length++;
+
+    };
+    Node<T>* get(int index) {
+        if (index<0||index>length) {
+            return nullptr;
+        }
+        Node<T> *temp = head;
+        for (int i = 0; i < index; i++) {
+            temp = temp->next;
+        }
+        return temp;
+    }
+    void addWaypointAtIndex(int index, T& data) {
+
+        if (index<0||index>=length) {
+            cout << "Index is invalid" << endl;
+            return;
+        }
+
+        if (index == 0) {
+            addWaypointAtBeginning(data);
+        }
+
+        if (index == length) {
+            addWaypointAtEnd(data);
+        }
+
+        else {
+            Node<T> *newNode = new Node<T>(data);
+            Node<T> *temp = get(index-1);
+            newNode->next = temp->next;
+            newNode->prev = temp;
+            newNode->next->prev = newNode;
+            temp->next = newNode;
+            length++;
+        }
+
+
+
+
+    }
+    void removeWaypointAtBeginning() {
+        if (length==0) { // edge case nothing in list
+            cout << "There is no waypoint at the beginning" << endl;
+            return;
+        }
+        else { // using dellast method for singly linked list but also taking into account previous node
+            Node<T> *temp = head;
+            head = head->next;
+            head->prev = nullptr;
+            delete temp;
+            length--;
+        }
+
+
+         {
+
+        }
+    }
+    void removeWaypointAtEnd() { // setting to previous than making the previous the new last node then deleting original
+        Node<T> *temp = tail;
+        tail = tail->prev;
+        tail->next = nullptr;
+        delete temp;
+        length--;
+
+
+
+
+
+
+
+    }
+    void removeWaypointAtIndex(int index) {
+
+        if (index<0 || index>=length) {
+           return;
+        }
+        else if (length==0) {
+            return;
+        }
+
+        else if (index==length-1) {
+            removeWaypointAtEnd();
+        }
+        else {
+            Node<T> *prev = get(index-1); // gets previous through subtracting one from chosen index and using get method to take it so you can use to replace index you chose to remove
+            Node<T> *temp = prev->next; // sets temp to where your index is so you can remove it
+            prev->next = temp->next;
+            prev->next->prev = prev;
+
+            //prev->next = temp->next; // moves previous next to the next node of where your index was set to so it can replace it when the index is deleted
+
+            delete temp; // deleteing temp
+            length--; // takes out from length the node that was deleted
+        }
+    }
+
+    void traverseForward() {
+        Node<T> *current = head;
+        while (current != NULL) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
+
+    void traverseBackward() {
+        Node<T> *current = tail;
+        while (current != nullptr) {
+            cout << current->data << " ";
+            current = current->prev;
+        }
+        cout << endl;
+    }
+
+
+    Node<T>* getWaypoint(int index) {
+        if (index<0 || index>=length) {
+            return nullptr;
+        }
+        else {
+            Node<T> *temp = head;
+            for (int i = 0; i < index; i++) {
+                temp = temp->next;
+            }
+            return temp;
+        }
+    }
+
+    void setWaypoint(int index, T& data) {
+        if (length==0) {
+            cout << "No waypoints" << endl;
+        }
+        else if (index<0 || index>=length) {
+            cout << "Waypoint is invalid" << endl;
+        }
+        else {
+            Node<T> *temp = head;
+            for (int i = 0; i < index; i++) {
+                temp = temp->next;
+
+            }
+            temp->data = data;
+
+        }
+    }
+
+    void print() {
+        Node<T> *current = head;
+        while (current) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
 
 };
 
