@@ -70,20 +70,7 @@ public:
     }
     void addWaypointAtEnd(T& data) {
         Node<T> *newNode = new Node<T>(data);
-        /*
-       if (head == nullptr) { // empty list
-           head = newNode;
-           tail = newNode;
-       }
-        else {
-            tail->next = newNode;
-            newNode->prev = tail;
-            tail = newNode;
 
-        }
-
-        length++;
-        */
 
         Node<T> *temp = head;
         if (length == 0) { // empty list
@@ -102,31 +89,31 @@ public:
 
     };
     Node<T>* get(int index) {
-        if (index<0||index>length) {
+        if (index<0||index>length) { // out of index bounds
             return nullptr;
         }
         Node<T> *temp = head;
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < index; i++) { // iterate through until at chosen index
             temp = temp->next;
         }
         return temp;
     }
     void addWaypointAtIndex(int index, T& data) {
 
-        if (index<0||index>=length) {
+        if (index<0||index>=length) { // index being chosen is not within the bounds
             cout << "Index is invalid" << endl;
             return;
         }
 
-        if (index == 0) {
+        if (index == 0) { // start of list
             addWaypointAtBeginning(data);
         }
 
-        if (index == length) {
+        if (index == length) { // end of list
             addWaypointAtEnd(data);
         }
 
-        else {
+        else { // middle of list
             Node<T> *newNode = new Node<T>(data);
             Node<T> *temp = get(index-1);
             newNode->next = temp->next;
@@ -145,7 +132,7 @@ public:
             cout << "There is no waypoint at the beginning" << endl;
             return;
         }
-        else { // using dellast method for singly linked list but also taking into account previous node
+        else { // using delfirst method for singly linked list but also taking into account previous node
             Node<T> *temp = head;
             head = head->next;
             head->prev = nullptr;
@@ -159,6 +146,10 @@ public:
         }
     }
     void removeWaypointAtEnd() { // setting to previous than making the previous the new last node then deleting original
+        if (length==0) { // edge case nothing in list
+            cout << "Empty list" << endl;
+            return;
+        }
         Node<T> *temp = tail;
         tail = tail->prev;
         tail->next = nullptr;
@@ -174,17 +165,20 @@ public:
     }
     void removeWaypointAtIndex(int index) {
 
-        if (index<0 || index>=length) {
+        if (index<0 || index>=length) { // out of index bound
            return;
         }
-        else if (length==0) {
+        else if (length==0) { // empty list
             return;
         }
+        else if (index = 0) {
+            removeWaypointAtBeginning();
+        }
 
-        else if (index==length-1) {
+        else if (index==length-1) { // end of list
             removeWaypointAtEnd();
         }
-        else {
+        else { // using code from original single linked list for removing waypoints at middle with a bit of tweaking
             Node<T> *prev = get(index-1); // gets previous through subtracting one from chosen index and using get method to take it so you can use to replace index you chose to remove
             Node<T> *temp = prev->next; // sets temp to where your index is so you can remove it
             prev->next = temp->next;
@@ -199,14 +193,14 @@ public:
 
     void traverseForward() {
         Node<T> *current = head;
-        while (current != NULL) {
+        while (current != NULL) { // while list is not empty go through list and print
             cout << current->data << " ";
             current = current->next;
         }
         cout << endl;
     }
 
-    void traverseBackward() {
+    void traverseBackward() { // starting at back and while current is not empty print and traverse
         Node<T> *current = tail;
         while (current != nullptr) {
             cout << current->data << " ";
@@ -217,28 +211,32 @@ public:
 
 
     Node<T>* getWaypoint(int index) {
-        if (index<0 || index>=length) {
+        if (length==0) { // empty
+            cout << "No waypoint found" << endl;
+        }
+        if (index<0 || index>=length) { // out of index
             return nullptr;
         }
         else {
             Node<T> *temp = head;
-            for (int i = 0; i < index; i++) {
+            for (int i = 0; i < index; i++) { // same method as other get
                 temp = temp->next;
             }
+            cout << temp->data << " ";
             return temp;
         }
     }
 
     void setWaypoint(int index, T& data) {
-        if (length==0) {
-            cout << "No waypoints" << endl;
+        if (length==0) { // empty
+            cout << "Empty list" << endl;
         }
-        else if (index<0 || index>=length) {
+        else if (index<0 || index>=length) { // index out of bound
             cout << "Waypoint is invalid" << endl;
         }
         else {
             Node<T> *temp = head;
-            for (int i = 0; i < index; i++) {
+            for (int i = 0; i < index; i++) { // traverse through index then when there replace with what you were setting
                 temp = temp->next;
 
             }
@@ -249,7 +247,7 @@ public:
 
     void print() {
         Node<T> *current = head;
-        while (current) {
+        while (current) { // while head is true
             cout << current->data << " ";
             current = current->next;
         }
